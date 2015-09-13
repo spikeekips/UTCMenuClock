@@ -106,7 +106,7 @@ NSMenuItem *showTimeZoneItem;
     }
 
     [UTCdateDF setDateStyle:NSDateFormatterFullStyle];
-    [UTCdateShortDF setDateStyle:NSDateFormatterShortStyle];
+    [UTCdateShortDF setDateStyle:NSDateFormatterMediumStyle];
     [UTCdaynum setDateFormat:@"D/"];
 
     NSString* UTCtimepart = [UTCdf stringFromDate: date];
