@@ -87,6 +87,13 @@ NSMenuItem *showTimeZoneItem;
     NSDateFormatter* UTCdateShortDF = [[[NSDateFormatter alloc] init] autorelease];
     NSDateFormatter* UTCdaynum = [[[NSDateFormatter alloc] init] autorelease];
     
+    NSDateFormatter *   MacDateFormatter;
+
+    MacDateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+    MacDateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    MacDateFormatter.dateFormat = @"EEE MMM d h:m a";
+    MacDateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+
     NSTimeZone* UTCtz = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
 
     [UTCdf setTimeZone: UTCtz];
@@ -111,7 +118,7 @@ NSMenuItem *showTimeZoneItem;
 
     NSString* UTCtimepart = [UTCdf stringFromDate: date];
     NSString* UTCdatepart = [UTCdateDF stringFromDate: date];
-    NSString* UTCdateShort = [UTCdateShortDF stringFromDate: date];
+    NSString* UTCdateShort = [MacDateFormatter stringFromDate: date];
     NSString* UTCJulianDay;
     NSString* UTCTzString;
     
@@ -129,7 +136,7 @@ NSMenuItem *showTimeZoneItem;
     }
 
     if (showDate) {
-        [ourStatus setTitle:[NSString stringWithFormat:@"%@ %@%@%@", UTCdateShort, UTCJulianDay, UTCtimepart, UTCTzString]];
+        [ourStatus setTitle:[NSString stringWithFormat:@"%@ %@", UTCdateShort, UTCTzString]];
     } else {
         [ourStatus setTitle:[NSString stringWithFormat:@"%@%@%@", UTCJulianDay, UTCtimepart, UTCTzString]];
     }
