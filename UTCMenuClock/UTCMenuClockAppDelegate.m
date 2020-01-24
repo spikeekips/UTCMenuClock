@@ -86,13 +86,18 @@ NSMenuItem *showTimeZoneItem;
     NSDateFormatter* UTCdateDF = [[[NSDateFormatter alloc] init] autorelease];
     NSDateFormatter* UTCdateShortDF = [[[NSDateFormatter alloc] init] autorelease];
     NSDateFormatter* UTCdaynum = [[[NSDateFormatter alloc] init] autorelease];
-    
-    NSDateFormatter *   MacDateFormatter;
+
+    NSDateFormatter * MacUTCDateFormatter;
+    NSDateFormatter * MacDateFormatter;
+
+    MacUTCDateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+    MacUTCDateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
+    MacUTCDateFormatter.dateFormat = @"y-MM-d h:m a";
+    MacUTCDateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
 
     MacDateFormatter = [[[NSDateFormatter alloc] init] autorelease];
     MacDateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
     MacDateFormatter.dateFormat = @"EEE MMM d h:m a";
-    MacDateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
 
     NSTimeZone* UTCtz = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
 
@@ -105,7 +110,7 @@ NSMenuItem *showTimeZoneItem;
     BOOL showSeconds = [self fetchBooleanPreference:@"ShowSeconds"];
     BOOL showJulian = [self fetchBooleanPreference:@"ShowJulianDate"];
     BOOL showTimeZone = [self fetchBooleanPreference:@"ShowTimeZone"];
-    
+
     if (showSeconds){
         [UTCdf setDateFormat: @"HH:mm:ss"];
     } else {
@@ -118,25 +123,26 @@ NSMenuItem *showTimeZoneItem;
 
     NSString* UTCtimepart = [UTCdf stringFromDate: date];
     NSString* UTCdatepart = [UTCdateDF stringFromDate: date];
-    NSString* UTCdateShort = [MacDateFormatter stringFromDate: date];
+    NSString* UTCdateShort = [MacUTCDateFormatter stringFromDate: date];
+    NSString* DateShort = [MacDateFormatter stringFromDate: date];
     NSString* UTCJulianDay;
     NSString* UTCTzString;
-    
-    
-    if (showJulian) { 
+
+
+    if (showJulian) {
         UTCJulianDay = [UTCdaynum stringFromDate: date];
-    } else { 
+    } else {
         UTCJulianDay = @"";
     }
-    
-    if (showTimeZone) { 
+
+    if (showTimeZone) {
         UTCTzString = @" UTC";
-    } else { 
+    } else {
         UTCTzString = @"";
     }
 
     if (showDate) {
-        [ourStatus setTitle:[NSString stringWithFormat:@"%@ %@", UTCdateShort, UTCTzString]];
+        [ourStatus setTitle:[NSString stringWithFormat:@"%@ (%@%@)", DateShort, UTCdateShort, UTCTzString]];
     } else {
         [ourStatus setTitle:[NSString stringWithFormat:@"%@%@%@", UTCJulianDay, UTCtimepart, UTCTzString]];
     }
@@ -148,7 +154,7 @@ NSMenuItem *showTimeZoneItem;
 - (IBAction)showFontMenu:(id)sender {
     NSFontManager *fontManager = [NSFontManager sharedFontManager];
     [fontManager setDelegate:self];
-    
+
     NSFontPanel *fontPanel = [fontManager fontPanel:YES];
     [fontPanel makeKeyAndOrderFront:sender];
 }
@@ -159,7 +165,7 @@ NSMenuItem *showTimeZoneItem;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
     // set our default preferences if they've never been set before.
-    
+
     NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
     NSString *dateKey    = @"dateKey";
     NSDate *lastRead    = (NSDate *)[[NSUserDefaults standardUserDefaults] objectForKey:dateKey];
@@ -172,7 +178,7 @@ NSMenuItem *showTimeZoneItem;
 
         [standardUserDefaults setBool:TRUE forKey:@"ShowTimeZone"];
         [showTimeZoneItem setState:NSOnState];
-    }    
+    }
     [self doDateUpdate];
 
 }
@@ -210,13 +216,13 @@ NSMenuItem *showTimeZoneItem;
     NSMenuItem *showSecondsItem = [[[NSMenuItem alloc] init] autorelease];
     NSMenuItem *showJulianItem = [[[NSMenuItem alloc] init] autorelease];
  //   NSMenuItem *changeFontItem = [[[NSMenuItem alloc] init] autorelease];
-    
+
     showTimeZoneItem = [[[NSMenuItem alloc] init] autorelease];
     NSMenuItem *sep1Item = [NSMenuItem separatorItem];
     NSMenuItem *sep2Item = [NSMenuItem separatorItem];
     NSMenuItem *sep3Item = [NSMenuItem separatorItem];
     NSMenuItem *sep4Item = [NSMenuItem separatorItem];
-    
+
     [mainItem setTitle:@""];
 
     [cp1Item setTitle:@"UTC Menu Clock v1.2"];
@@ -237,7 +243,7 @@ NSMenuItem *showTimeZoneItem;
     [showSecondsItem setTitle:@"Show Seconds"];
     [showSecondsItem setEnabled:TRUE];
     [showSecondsItem setAction:@selector(togglePreference:)];
-    
+
     [showJulianItem setTitle:@"Show Julian Date"];
     [showJulianItem setEnabled:TRUE];
     [showJulianItem setAction:@selector(togglePreference:)];
@@ -245,10 +251,10 @@ NSMenuItem *showTimeZoneItem;
     [showTimeZoneItem setTitle:@"Show Time Zone"];
     [showTimeZoneItem setEnabled:TRUE];
     [showTimeZoneItem setAction:@selector(togglePreference:)];
-    
+
  //   [changeFontItem setTitle:@"Change Font..."];
   //  [changeFontItem setAction:@selector(showFontMenu:)];
-    
+
     [quitItem setTitle:@"Quit"];
     [quitItem setEnabled:TRUE];
     [quitItem setAction:@selector(quitProgram:)];
@@ -270,8 +276,8 @@ NSMenuItem *showTimeZoneItem;
     BOOL showSeconds = [self fetchBooleanPreference:@"ShowSeconds"];
     BOOL showJulian = [self fetchBooleanPreference:@"ShowJulianDate"];
     BOOL showTimeZone = [self fetchBooleanPreference:@"ShowTimeZone"];
-    
-    // TODO: DRY this up a bit. 
+
+    // TODO: DRY this up a bit.
     if (showDate) {
         [showDateItem setState:NSOnState];
     } else {
@@ -289,13 +295,13 @@ NSMenuItem *showTimeZoneItem;
     } else {
         [showJulianItem setState:NSOffState];
     }
-    
+
     if (showTimeZone) {
         [showTimeZoneItem setState:NSOnState];
     } else {
         [showTimeZoneItem setState:NSOffState];
     }
-    
+
     // latsly, deal with Launch at Login
     LaunchAtLoginController *launchController = [[LaunchAtLoginController alloc] init];
     BOOL launch = [launchController launchAtLogin];
