@@ -92,12 +92,12 @@ NSMenuItem *showTimeZoneItem;
 
     MacUTCDateFormatter = [[[NSDateFormatter alloc] init] autorelease];
     MacUTCDateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    MacUTCDateFormatter.dateFormat = @"y-MM-dd h:m a";
+    MacUTCDateFormatter.dateFormat = @"y-MM-dd h:mm a";
     MacUTCDateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
 
     MacDateFormatter = [[[NSDateFormatter alloc] init] autorelease];
     MacDateFormatter.locale = [NSLocale localeWithLocaleIdentifier:@"en_US_POSIX"];
-    MacDateFormatter.dateFormat = @"EEE MMM d h:m a";
+    MacDateFormatter.dateFormat = @"EEE MMM d h:mm a";
 
     NSTimeZone* UTCtz = [NSTimeZone timeZoneWithAbbreviation:@"GMT"];
 
